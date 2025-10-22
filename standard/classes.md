@@ -4,6 +4,8 @@
 
 A class is a data structure that may contain data members (constants and fields), function members (methods, properties, events, indexers, operators, instance constructors, finalizers, and static constructors), and nested types. Class types support inheritance, a mechanism whereby a ***derived class*** can extend and specialize a ***base class***.
 
+Structs ([§16](structs.md#16-structs)) and interfaces ([§18](ranges.md#18-extended-indexing-and-slicing)) have members similar to classes but with certain restrictions. This clause defines the declarations for classes and class members. The clauses for structs and interfaces define the restrictions for those types in terms of the corresponding declarations in class types.
+
 ## 15.2 Class declarations
 
 ### 15.2.1 General
@@ -18,7 +20,7 @@ class_declaration
     ;
 ```
 
-A *class_declaration* consists of an optional set of *attributes* ([§22](attributes.md#22-attributes)), followed by an optional set of *class_modifier*s ([§15.2.2](classes.md#1522-class-modifiers)), followed by an optional `partial` modifier ([§15.2.7](classes.md#1527-partial-type-declarations)), followed by the keyword `class` and an *identifier* that names the class, followed by an optional *type_parameter_list* ([§15.2.3](classes.md#1523-type-parameters)), followed by an optional *class_base* specification ([§15.2.4](classes.md#1524-class-base-specification)), followed by an optional set of *type_parameter_constraints_clause*s ([§15.2.5](classes.md#1525-type-parameter-constraints)), followed by a *class_body* ([§15.2.6](classes.md#1526-class-body)), optionally followed by a semicolon.
+A *class_declaration* consists of an optional set of *attributes* ([§23](attributes.md#23-attributes)), followed by an optional set of *class_modifier*s ([§15.2.2](classes.md#1522-class-modifiers)), followed by an optional `partial` modifier ([§15.2.7](classes.md#1527-partial-type-declarations)), followed by the keyword `class` and an *identifier* that names the class, followed by an optional *type_parameter_list* ([§15.2.3](classes.md#1523-type-parameters)), followed by an optional *class_base* specification ([§15.2.4](classes.md#1524-class-base-specification)), followed by an optional set of *type_parameter_constraints_clause*s ([§15.2.5](classes.md#1525-type-parameter-constraints)), followed by a *class_body* ([§15.2.6](classes.md#1526-class-body)), optionally followed by a semicolon.
 
 A class declaration shall not supply *type_parameter_constraints_clause*s unless it also supplies a *type_parameter_list*.
 
@@ -44,7 +46,7 @@ class_modifier
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
 It is a compile-time error for the same modifier to appear multiple times in a class declaration.
 
@@ -166,7 +168,7 @@ Two partial generic type declarations (in the same program) contribute to the sa
 
 #### 15.2.4.1 General
 
-A class declaration may include a *class_base* specification, which defines the direct base class of the class and the interfaces ([§18](interfaces.md#18-interfaces)) directly implemented by the class.
+A class declaration may include a *class_base* specification, which defines the direct base class of the class and the interfaces ([§19](interfaces.md#19-interfaces)) directly implemented by the class.
 
 ```ANTLR
 class_base
@@ -232,7 +234,7 @@ The base class specified in a class declaration can be a constructed class type 
 
 The direct base class of a class type shall be at least as accessible as the class type itself ([§7.5.5](basic-concepts.md#755-accessibility-constraints)). For example, it is a compile-time error for a public class to derive from a private or internal class.
 
-The direct base class of a class type shall not be any of the following types: `System.Array`, `System.Delegate`, `System.Enum`, `System.ValueType` or the `dynamic` type. Furthermore, a generic class declaration shall not use `System.Attribute` as a direct or indirect base class ([§22.2.1](attributes.md#2221-general)).
+The direct base class of a class type shall not be any of the following types: `System.Array`, `System.Delegate`, `System.Enum`, `System.ValueType` or the `dynamic` type. Furthermore, a generic class declaration shall not use `System.Attribute` as a direct or indirect base class ([§23.2.1](attributes.md#2321-general)).
 
 In determining the meaning of the direct base class specification `A` of a class `B`, the direct base class of `B` is temporarily assumed to be `object`, which ensures that the meaning of a base class specification cannot recursively depend on itself.
 
@@ -270,7 +272,7 @@ The base classes of a class are the direct base class and its base classes. In o
 
 Except for class `object`, every class has exactly one direct base class. The `object` class has no direct base class and is the ultimate base class of all other classes.
 
-It is a compile-time error for a class to depend on itself. For the purpose of this rule, a class ***directly depends on*** its direct base class (if any) and *directly depends on* the nearest enclosing class within which it is nested (if any). Given this definition, the complete set of classes upon which a class depends is the transitive closure of the *directly depends on* relationship.
+It is a compile-time error for a class to depend on itself. For the purpose of this rule, a class ***directly depends on*** its direct base class (if any) and *directly depends on* the type within which it is immediately nested (if any).
 
 > *Example*: The example
 >
@@ -370,7 +372,7 @@ Typically, each part provides an implementation of the interfaces declared on th
 >
 > *end example*
 
-The base interfaces specified in a class declaration can be constructed interface types ([§8.4](types.md#84-constructed-types), [§18.2](interfaces.md#182-interface-declarations)). A base interface cannot be a type parameter on its own, though it can involve the type parameters that are in scope.
+The base interfaces specified in a class declaration can be constructed interface types ([§8.4](types.md#84-constructed-types), [§19.2](interfaces.md#192-interface-declarations)). A base interface cannot be a type parameter on its own, though it can involve the type parameters that are in scope.
 
 > *Example*: The following code illustrates how a class can implement and extend constructed types:
 >
@@ -384,7 +386,7 @@ The base interfaces specified in a class declaration can be constructed interfac
 >
 > *end example*
 
-Interface implementations are discussed further in [§18.6](interfaces.md#186-interface-implementations).
+Interface implementations are discussed further in [§19.6](interfaces.md#196-interface-implementations).
 
 ### 15.2.5 Type parameter constraints
 
@@ -442,10 +444,11 @@ The nullability of the type argument need not match the nullability of the type 
 
 > *Note*: To specify that a type argument is a nullable reference type, don’t add the nullable type annotation as a constraint (use `T : class` or `T : BaseClass`), but use `T?` throughout the generic declaration to indicate the corresponding nullable reference type for the type argument. *end note*
 
-<!-- Remove in C# 9, when this is allowed -->
-The nullable type annotation, `?`, can’t be used on an unconstrained type argument.
+<!-- Remove in C# 9, when `?` is allowed on any type parameter. -->
+The nullable type annotation, `?`, can only be used on a type parameter that has the value type constraint, the reference type constraint without the *nullable_type_annotation*, or a class type constraint without the *nullable_type_annotation*.
 
-For a type parameter `T` when the type argument is a nullable reference type `C?`, instances of `T?` are interpreted as `C?`, not `C??`.
+<!-- Add in C# 9, when `?` is allowed on nullable reference type parameters. -->
+<!-- For a type parameter `T` when the type argument is a nullable reference type `C?`, instances of `T?` are interpreted as `C?`, not `C??`. -->
 
 > *Example*: The following examples show how the nullability of a type argument impacts the nullability of a declaration of its type parameter:
 >
@@ -809,7 +812,7 @@ Nested types may be declared in multiple parts by using the `partial` modifier. 
 >
 > *end example*
 
-The handling of attributes specified on the type or type parameters of different parts of a partial type declaration is discussed in [§22.3](attributes.md#223-attribute-specification).
+The handling of attributes specified on the type or type parameters of different parts of a partial type declaration is discussed in [§23.3](attributes.md#233-attribute-specification).
 
 ## 15.3 Class members
 
@@ -1096,7 +1099,7 @@ When a field, method, property, event, indexer, constructor, or finalizer declar
 
 #### 15.3.9.1 General
 
-A type declared within a class or struct is called a ***nested type***. A type that is declared within a compilation unit or namespace is called a ***non-nested type***.
+A type declared within a class, struct, or interface is called a ***nested type***. A type that is declared within a compilation unit or namespace is called a ***non-nested type***.
 
 > *Example*: In the following example:
 >
@@ -1124,7 +1127,7 @@ The fully qualified name ([§7.8.3](basic-concepts.md#783-fully-qualified-names)
 
 #### 15.3.9.3 Declared accessibility
 
-Non-nested types can have `public` or `internal` declared accessibility and have `internal` declared accessibility by default. Nested types can have these forms of declared accessibility too, plus one or more additional forms of declared accessibility, depending on whether the containing type is a class or struct:
+Non-nested types can have `public` or `internal` declared accessibility and have `internal` declared accessibility by default. Nested types can have these forms of declared accessibility too, plus one or more additional forms of declared accessibility, depending on whether the containing type is a class, struct, or interface:
 
 - A nested type that is declared in a class can have any of the permitted kinds of declared accessibility and, like other class members, defaults to `private` declared accessibility.
 - A nested type that is declared in a struct can have any of three forms of declared accessibility (`public`, `internal`, or `private`) and, like other struct members, defaults to `private` declared accessibility.
@@ -1548,9 +1551,9 @@ constant_modifier
     ;
 ```
 
-A *constant_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)), a `new` modifier ([§15.3.5](classes.md#1535-the-new-modifier)), and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)). The attributes and modifiers apply to all of the members declared by the *constant_declaration*. Even though constants are considered static members, a *constant_declaration* neither requires nor allows a `static` modifier. It is an error for the same modifier to appear multiple times in a constant declaration.
+A *constant_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)), a `new` modifier ([§15.3.5](classes.md#1535-the-new-modifier)), and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)). The attributes and modifiers apply to all of the members declared by the *constant_declaration*. Even though constants are considered static members, a *constant_declaration* neither requires nor allows a `static` modifier. It is an error for the same modifier to appear multiple times in a constant declaration.
 
-The *type* of a *constant_declaration* specifies the type of the members introduced by the declaration. The type is followed by a list of *constant_declarator*s ([§13.6.3](statements.md#1363-local-constant-declarations)), each of which introduces a new member. A *constant_declarator* consists of an *identifier* that names the member, followed by an “`=`” token, followed by a *constant_expression* ([§12.23](expressions.md#1223-constant-expressions)) that gives the value of the member.
+The *type* of a *constant_declaration* specifies the type of the members introduced by the declaration. The type is followed by a list of *constant_declarator*s ([§13.6.3](statements.md#1363-local-constant-declarations)), each of which introduces a new member. A *constant_declarator* consists of an *identifier* that names the member, followed by an “`=`” token, followed by a *constant_expression* ([§12.24](expressions.md#1224-constant-expressions)) that gives the value of the member.
 
 The *type* specified in a constant declaration shall be `sbyte`, `byte`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `char`, `float`, `double`, `decimal`, `bool`, `string`, an *enum_type*, or a *reference_type*. Each *constant_expression* shall yield a value of the target type or of a type that can be converted to the target type by an implicit conversion ([§10.2](conversions.md#102-implicit-conversions)).
 
@@ -1564,7 +1567,7 @@ A constant can itself participate in a *constant_expression*. Thus, a constant m
 <!-- markdownlint-disable MD028 -->
 
 <!-- markdownlint-enable MD028 -->
-> *Note*: As described in [§12.23](expressions.md#1223-constant-expressions), a *constant_expression* is an expression that can be fully evaluated at compile-time. Since the only way to create a non-null value of a *reference_type* other than `string` is to apply the `new` operator, and since the `new` operator is not permitted in a *constant_expression*, the only possible value for constants of *reference_type*s other than `string` is `null`. *end note*
+> *Note*: As described in [§12.24](expressions.md#1224-constant-expressions), a *constant_expression* is an expression that can be fully evaluated at compile-time. Since the only way to create a non-null value of a *reference_type* other than `string` is to apply the `new` operator, and since the `new` operator is not permitted in a *constant_expression*, the only possible value for constants of *reference_type*s other than `string` is `null`. *end note*
 
 When a symbolic name for a constant value is desired, but when the type of that value is not permitted in a constant declaration, or when the value cannot be computed at compile-time by a *constant_expression*, a readonly field ([§15.5.3](classes.md#1553-readonly-fields)) may be used instead.
 
@@ -1654,15 +1657,15 @@ variable_declarator
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
-A *field_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)), a `new` modifier ([§15.3.5](classes.md#1535-the-new-modifier)), a valid combination of the four access modifiers ([§15.3.6](classes.md#1536-access-modifiers)), and a `static` modifier ([§15.5.2](classes.md#1552-static-and-instance-fields)). In addition, a *field_declaration* may include a `readonly` modifier ([§15.5.3](classes.md#1553-readonly-fields)) or a `volatile` modifier ([§15.5.4](classes.md#1554-volatile-fields)), but not both. The attributes and modifiers apply to all of the members declared by the *field_declaration*. It is an error for the same modifier to appear multiple times in a *field_declaration*.
+A *field_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)), a `new` modifier ([§15.3.5](classes.md#1535-the-new-modifier)), a valid combination of the four access modifiers ([§15.3.6](classes.md#1536-access-modifiers)), and a `static` modifier ([§15.5.2](classes.md#1552-static-and-instance-fields)). In addition, a *field_declaration* may include a `readonly` modifier ([§15.5.3](classes.md#1553-readonly-fields)) or a `volatile` modifier ([§15.5.4](classes.md#1554-volatile-fields)), but not both. The attributes and modifiers apply to all of the members declared by the *field_declaration*. It is an error for the same modifier to appear multiple times in a *field_declaration*.
 
 The *type* of a *field_declaration* specifies the type of the members introduced by the declaration. The type is followed by a list of *variable_declarator*s, each of which introduces a new member. A *variable_declarator* consists of an *identifier* that names that member, optionally followed by an “`=`” token and a *variable_initializer* ([§15.5.6](classes.md#1556-variable-initializers)) that gives the initial value of that member.
 
 The *type* of a field shall be at least as accessible as the field itself ([§7.5.5](basic-concepts.md#755-accessibility-constraints)).
 
-The value of a field is obtained in an expression using a *simple_name* ([§12.8.4](expressions.md#1284-simple-names)), a *member_access* ([§12.8.7](expressions.md#1287-member-access)) or a base_access ([§12.8.15](expressions.md#12815-base-access)). The value of a non-readonly field is modified using an *assignment* ([§12.21](expressions.md#1221-assignment-operators)). The value of a non-readonly field can be both obtained and modified using postfix increment and decrement operators ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators)) and prefix increment and decrement operators ([§12.9.6](expressions.md#1296-prefix-increment-and-decrement-operators)).
+The value of a field is obtained in an expression using a *simple_name* ([§12.8.4](expressions.md#1284-simple-names)), a *member_access* ([§12.8.7](expressions.md#1287-member-access)) or a base_access ([§12.8.15](expressions.md#12815-base-access)). The value of a non-readonly field is modified using an *assignment* ([§12.22](expressions.md#1222-assignment-operators)). The value of a non-readonly field can be both obtained and modified using postfix increment and decrement operators ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators)) and prefix increment and decrement operators ([§12.9.7](expressions.md#1297-prefix-increment-and-decrement-operators)).
 
 A field declaration that declares multiple fields is equivalent to multiple declarations of single fields with the same attributes, modifiers, and type.
 
@@ -2049,6 +2052,8 @@ A variable initializer for an instance field cannot reference the instance being
 
 ### 15.6.1 General
 
+[§15.6](classes.md#156-methods) and its subclauses cover method declarations in classes. That text is augmented by information about declaring methods in structs ([§16.4](structs.md#164-class-and-struct-differences)) and interfaces ([§19.4.3](interfaces.md#1943-interface-methods)).
+
 A ***method*** is a member that implements a computation or action that can be performed by an object or class. Methods are declared using *method_declaration*s:
 
 ```ANTLR
@@ -2128,12 +2133,12 @@ ref_method_body
 
 Grammar notes:
 
-- *unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+- *unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 - when recognising a *method_body* if both the *null_conditional_invocation_expression* and *expression* alternatives are applicable then the former shall be chosen.
 
 > *Note*: The overlapping of, and priority between, alternatives here is solely for descriptive convenience; the grammar rules could be elaborated to remove the overlap. ANTLR, and other grammar systems, adopt the same convenience and so *method_body* has the specified semantics automatically. *end note*
 
-A *method_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)) and one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.6.3](classes.md#1563-static-and-instance-methods)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods)), `override` ([§15.6.5](classes.md#1565-override-methods)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods)), `extern` ([§15.6.8](classes.md#1568-external-methods)) and `async` ([§15.14](classes.md#1514-async-functions)). Additionally a  *method_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.12](structs.md#16412-methods)).
+A *method_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)) and one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.6.3](classes.md#1563-static-and-instance-methods)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods)), `override` ([§15.6.5](classes.md#1565-override-methods)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods)), `extern` ([§15.6.8](classes.md#1568-external-methods)) and `async` ([§15.14](classes.md#1514-async-functions)). Additionally a  *method_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.12](structs.md#16412-methods)).
 
 A declaration has a valid combination of modifiers if all of the following are true:
 
@@ -2142,6 +2147,7 @@ A declaration has a valid combination of modifiers if all of the following are t
 - The declaration includes at most one of the following modifiers: `static`, `virtual`, and `override`.
 - The declaration includes at most one of the following modifiers: `new` and `override`.
 - If the declaration includes the `abstract` modifier, then the declaration does not include any of the following modifiers: `static`, `virtual`, `sealed`, or `extern`.
+- The declaration may include the `abstract` and `override` modifiers so that an abstract member may override a virtual member.
 - If the declaration includes the `private` modifier, then the declaration does not include any of the following modifiers: `virtual`, `override`, or `abstract`.
 - If the declaration includes the `sealed` modifier, then the declaration also includes the `override` modifier.
 - If the declaration includes the `partial` modifier, then it does not include any of the following modifiers: `new`, `public`, `protected`, `internal`, `private`, `virtual`, `sealed`, `override`, `abstract`, or `extern`.
@@ -2158,9 +2164,9 @@ The *ref_return_type* of a returns-by-ref method declaration specifies the type 
 
 A generic method is a method whose declaration includes a *type_parameter_list*. This specifies the type parameters for the method. The optional *type_parameter_constraints_clause*s specify the constraints for the type parameters.
 
-A generic *method_declaration*, either with an `override` modifier, or for an explicit interface member implementation, inherits type parameter constraints from the overridden method or interface member respectively. Such declarations may only have *type_parameter_constraints_clause*s containing the *primary_constraint*s `class` and `struct`, the meaning of which in this context is defined in [§15.6.5](classes.md#1565-override-methods) and [§18.6.2](interfaces.md#1862-explicit-interface-member-implementations) for overriding methods and explicit interface implementations respectively.
+A generic *method_declaration*, either with an `override` modifier, or for an explicit interface member implementation, inherits type parameter constraints from the overridden method or interface member respectively. Such declarations may only have *type_parameter_constraints_clause*s containing the *primary_constraint*s `class` and `struct`, the meaning of which in this context is defined in [§15.6.5](classes.md#1565-override-methods) and [§19.6.2](interfaces.md#1962-explicit-interface-member-implementations) for overriding methods and explicit interface implementations respectively.
 
-The *member_name* specifies the name of the method. Unless the method is an explicit interface member implementation ([§18.6.2](interfaces.md#1862-explicit-interface-member-implementations)), the *member_name* is simply an *identifier*.
+The *member_name* specifies the name of the method. Unless the method is an explicit interface member implementation ([§19.6.2](interfaces.md#1962-explicit-interface-member-implementations)), the *member_name* is simply an *identifier*.
 
 For an explicit interface member implementation, the *member_name* consists of an *interface_type* followed by a “`.`” and an *identifier*. In this case, the declaration shall include no modifiers other than (possibly) `extern` or `async`.
 
@@ -2230,7 +2236,7 @@ parameter_array
 
 The parameter list consists of one or more comma-separated parameters of which only the last may be a *parameter_array*.
 
-A *fixed_parameter* consists of an optional set of *attributes* ([§22](attributes.md#22-attributes)); an optional `in`, `out`, `ref`, or `this` modifier; a *type*; an *identifier*; and an optional *default_argument*. Each *fixed_parameter* declares a parameter of the given type with the given name. The `this` modifier designates the method as an extension method and is only allowed on the first parameter of a static method in a non-generic, non-nested static class. If the parameter is a `struct` type or a type parameter constrained to a `struct`, the `this` modifier may be combined with either the `ref` or `in` modifier, but not the `out` modifier. Extension methods are further described in [§15.6.10](classes.md#15610-extension-methods). A *fixed_parameter* with a *default_argument* is known as an ***optional parameter***, whereas a *fixed_parameter* without a *default_argument* is a ***required parameter***. A required parameter shall not appear after an optional parameter in a *parameter_list*.
+A *fixed_parameter* consists of an optional set of *attributes* ([§23](attributes.md#23-attributes)); an optional `in`, `out`, `ref`, or `this` modifier; a *type*; an *identifier*; and an optional *default_argument*. Each *fixed_parameter* declares a parameter of the given type with the given name. The `this` modifier designates the method as an extension method and is only allowed on the first parameter of a static method in a non-generic, non-nested static class. If the parameter is a `struct` type or a type parameter constrained to a `struct`, the `this` modifier may be combined with either the `ref` or `in` modifier, but not the `out` modifier. Extension methods are further described in [§15.6.10](classes.md#15610-extension-methods). A *fixed_parameter* with a *default_argument* is known as an ***optional parameter***, whereas a *fixed_parameter* without a *default_argument* is a ***required parameter***. A required parameter shall not appear after an optional parameter in a *parameter_list*.
 
 A parameter with a `ref`, `out` or `this` modifier cannot have a *default_argument*. An input parameter may have a *default_argument*. The *expression* in a *default_argument* shall be one of the following:
 
@@ -2240,9 +2246,9 @@ A parameter with a `ref`, `out` or `this` modifier cannot have a *default_argume
 
 The *expression* shall be implicitly convertible by an identity or nullable conversion to the type of the parameter.
 
-If optional parameters occur in an implementing partial method declaration ([§15.6.9](classes.md#1569-partial-methods)), an explicit interface member implementation ([§18.6.2](interfaces.md#1862-explicit-interface-member-implementations)), a single-parameter indexer declaration ([§15.9](classes.md#159-indexers)), or in an operator declaration ([§15.10.1](classes.md#15101-general)) a compiler should give a warning, since these members can never be invoked in a way that permits arguments to be omitted.
+If optional parameters occur in an implementing partial method declaration ([§15.6.9](classes.md#1569-partial-methods)), an explicit interface member implementation ([§19.6.2](interfaces.md#1962-explicit-interface-member-implementations)), a single-parameter indexer declaration ([§15.9](classes.md#159-indexers)), or in an operator declaration ([§15.10.1](classes.md#15101-general)) a compiler should give a warning, since these members can never be invoked in a way that permits arguments to be omitted.
 
-A *parameter_array* consists of an optional set of *attributes* ([§22](attributes.md#22-attributes)), a `params` modifier, an *array_type*, and an *identifier*. A parameter array declares a single parameter of the given array type with the given name. The *array_type* of a parameter array shall be a single-dimensional array type ([§17.2](arrays.md#172-array-types)). In a method invocation, a parameter array permits either a single argument of the given array type to be specified, or it permits zero or more arguments of the array element type to be specified. Parameter arrays are described further in [§15.6.2.4](classes.md#15624-parameter-arrays).
+A *parameter_array* consists of an optional set of *attributes* ([§23](attributes.md#23-attributes)), a `params` modifier, an *array_type*, and an *identifier*. A parameter array declares a single parameter of the given array type with the given name. The *array_type* of a parameter array shall be a single-dimensional array type ([§17.2](arrays.md#172-array-types)). In a method invocation, a parameter array permits either a single argument of the given array type to be specified, or it permits zero or more arguments of the array element type to be specified. Parameter arrays are described further in [§15.6.2.4](classes.md#15624-parameter-arrays).
 
 A *parameter_array* may occur after an optional parameter, but cannot have a default value – the omission of arguments for a *parameter_array* would instead result in the creation of an empty array.
 
@@ -2913,9 +2919,9 @@ When an instance method declaration includes a `sealed` modifier, that method is
 
 When an instance method declaration includes an `abstract` modifier, that method is said to be an ***abstract method***. Although an abstract method is implicitly also a virtual method, it cannot have the modifier `virtual`.
 
-An abstract method declaration introduces a new virtual method but does not provide an implementation of that method. Instead, non-abstract derived classes are required to provide their own implementation by overriding that method. Because an abstract method provides no actual implementation, the method body of an abstract method simply consists of a semicolon.
+An abstract method declaration introduces a new virtual method but does not provide an implementation of that method. Instead, non-abstract derived classes are required to provide their own implementation by overriding that method. The *method_body* of an abstract method simply consists of a semicolon.
 
-Abstract method declarations are only permitted in abstract classes ([§15.2.2.2](classes.md#15222-abstract-classes)).
+Abstract method declarations are only permitted in abstract classes ([§15.2.2.2](classes.md#15222-abstract-classes)) and interfaces ([§19.4.3](interfaces.md#1943-interface-methods)).
 
 > *Example*: In the following code
 >
@@ -2937,7 +2943,7 @@ Abstract method declarations are only permitted in abstract classes ([§15.2.2.2
 > }
 > ```
 >
-> the `Shape` class defines the abstract notion of a geometrical shape object that can paint itself. The `Paint` method is abstract because there is no meaningful default implementation. The `Ellipse` and `Box` classes are concrete `Shape` implementations. Because these classes are non-abstract, they are required to override the `Paint` method and provide an actual implementation.
+> the `Shape` class defines the abstract notion of a geometrical shape object that can paint itself. The `Paint` method is abstract because there is no meaningful fallback implementation for the abstract concept of shape. The `Ellipse` and `Box` classes are concrete `Shape` implementations. Because these classes are non-abstract, they are required to override the `Paint` method and provide an actual implementation.
 >
 > *end example*
 
@@ -3326,18 +3332,18 @@ ref_property_body
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
-A *property_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.7.2](classes.md#1572-static-and-instance-properties)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `override` ([§15.6.5](classes.md#1565-override-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)) and `extern` ([§15.6.8](classes.md#1568-external-methods)). Additionally a *property_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.11](structs.md#16411-properties)).
+A *property_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.7.2](classes.md#1572-static-and-instance-properties)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `override` ([§15.6.5](classes.md#1565-override-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)) and `extern` ([§15.6.8](classes.md#1568-external-methods)). Additionally a *property_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.11](structs.md#16411-properties)).
 
 - The first declares a non-ref-valued property. Its value has type *type*. This kind of property may be readable and/or writeable.
 - The second declares a ref-valued property. Its value is a *variable_reference* ([§9.5](variables.md#95-variable-references)), that may be `readonly`, to a variable of type *type*. This kind of property is only readable.
 
-A *property_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.7.2](classes.md#1572-static-and-instance-properties)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `override` ([§15.6.5](classes.md#1565-override-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers.
+A *property_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.7.2](classes.md#1572-static-and-instance-properties)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `override` ([§15.6.5](classes.md#1565-override-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods), [§15.7.6](classes.md#1576-virtual-sealed-override-and-abstract-accessors)), and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers.
 
 Property declarations are subject to the same rules as method declarations ([§15.6](classes.md#156-methods)) with regard to valid combinations of modifiers.
 
-The *member_name* ([§15.6.1](classes.md#1561-general)) specifies the name of the property. Unless the property is an explicit interface member implementation, the *member_name* is simply an *identifier*. For an explicit interface member implementation ([§18.6.2](interfaces.md#1862-explicit-interface-member-implementations)), the *member_name* consists of an *interface_type* followed by a “`.`” and an *identifier*.
+The *member_name* ([§15.6.1](classes.md#1561-general)) specifies the name of the property. Unless the property is an explicit interface member implementation, the *member_name* is simply an *identifier*. For an explicit interface member implementation ([§19.6.2](interfaces.md#1962-explicit-interface-member-implementations)), the *member_name* consists of an *interface_type* followed by a “`.`” and an *identifier*.
 
 The *type* of a property shall be at least as accessible as the property itself ([§7.5.5](basic-concepts.md#755-accessibility-constraints)).
 
@@ -3419,7 +3425,6 @@ For a ref-valued property the *ref_get_accessor_declaration* consists optional a
 
 The use of *accessor_modifier*s is governed by the following restrictions:
 
-- An *accessor_modifier* shall not be used in an interface or in an explicit interface member implementation.
 - The *accessor_modifier* `readonly` is permitted only in a *property_declaration* or *indexer_declaration* that is contained directly by a *struct_declaration* ([§16.4.11](structs.md#16411-properties), [§16.4.13](structs.md#16413-indexers)).
 - For a property or indexer that has no `override` modifier, an *accessor_modifier* is permitted only if the property or indexer has both a get and set accessor, and then is permitted only on one of those accessors.
 - For a property or indexer that includes an `override` modifier, an accessor shall match the *accessor_modifier*, if any, of the accessor being overridden.
@@ -3469,7 +3474,7 @@ A get accessor for a ref-valued property corresponds to a parameterless method w
 
 The body of a get accessor for a ref-valued property shall conform to the rules for ref-valued methods described in [§15.6.11](classes.md#15611-method-body).
 
-A set accessor corresponds to a method with a single value parameter of the property type and a `void` return type. The implicit parameter of a set accessor is always named `value`. When a property is referenced as the target of an assignment ([§12.21](expressions.md#1221-assignment-operators)), or as the operand of `++` or `–-` ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators), [§12.9.6](expressions.md#1296-prefix-increment-and-decrement-operators)), the set accessor is invoked with an argument that provides the new value ([§12.21.2](expressions.md#12212-simple-assignment)). The body of a set accessor shall conform to the rules for `void` methods described in [§15.6.11](classes.md#15611-method-body). In particular, return statements in the set accessor body are not permitted to specify an expression. Since a set accessor implicitly has a parameter named `value`, it is a compile-time error for a local variable or constant declaration in a set accessor to have that name.
+A set accessor corresponds to a method with a single value parameter of the property type and a `void` return type. The implicit parameter of a set accessor is always named `value`. When a property is referenced as the target of an assignment ([§12.22](expressions.md#1222-assignment-operators)), or as the operand of `++` or `–-` ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators), [§12.9.7](expressions.md#1297-prefix-increment-and-decrement-operators)), the set accessor is invoked with an argument that provides the new value ([§12.22.2](expressions.md#12222-simple-assignment)). The body of a set accessor shall conform to the rules for `void` methods described in [§15.6.11](classes.md#15611-method-body). In particular, return statements in the set accessor body are not permitted to specify an expression. Since a set accessor implicitly has a parameter named `value`, it is a compile-time error for a local variable or constant declaration in a set accessor to have that name.
 
 Based on the presence or absence of the get and set accessors, a property is classified as follows:
 
@@ -3842,8 +3847,8 @@ The presence of an *accessor_modifier* never affects member lookup ([§12.5](exp
 Once a particular non-ref-valued property or non-ref-valued indexer has been selected, the accessibility domains of the specific accessors involved are used to determine if that usage is valid:
 
 - If the usage is as a value ([§12.2.2](expressions.md#1222-values-of-expressions)), the get accessor shall exist and be accessible.
-- If the usage is as the target of a simple assignment ([§12.21.2](expressions.md#12212-simple-assignment)), the set accessor shall exist and be accessible.
-- If the usage is as the target of compound assignment ([§12.21.4](expressions.md#12214-compound-assignment)), or as the target of the `++` or `--` operators ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators), [§12.9.6](expressions.md#1296-prefix-increment-and-decrement-operators)), both the get accessors and the set accessor shall exist and be accessible.
+- If the usage is as the target of a simple assignment ([§12.22.2](expressions.md#12222-simple-assignment)), the set accessor shall exist and be accessible.
+- If the usage is as the target of compound assignment ([§12.22.4](expressions.md#12224-compound-assignment)), or as the target of the `++` or `--` operators ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators), [§12.9.7](expressions.md#1297-prefix-increment-and-decrement-operators)), both the get accessors and the set accessor shall exist and be accessible.
 
 > *Example*: In the following example, the property `A.Text` is hidden by the property `B.Text`, even in contexts where only the set accessor is called. In contrast, the property `B.Count` is not accessible to class `M`, so the accessible property `A.Count` is used instead.
 >
@@ -3932,7 +3937,7 @@ An abstract property declaration specifies that the accessors of the property ar
 
 A property declaration that includes both the `abstract` and `override` modifiers specifies that the property is abstract and overrides a base property. The accessors of such a property are also abstract.
 
-Abstract property declarations are only permitted in abstract classes ([§15.2.2.2](classes.md#15222-abstract-classes)). The accessors of an inherited virtual property can be overridden in a derived class by including a property declaration that specifies an `override` directive. This is known as an ***overriding property declaration***. An overriding property declaration does not declare a new property. Instead, it simply specializes the implementations of the accessors of an existing virtual property.
+Abstract property declarations are only permitted in abstract classes ([§15.2.2.2](classes.md#15222-abstract-classes)) and interfaces ([§19.4.4](interfaces.md#1944-interface-properties)). The accessors of an inherited virtual property can be overridden in a derived class by including a property declaration that specifies an `override` directive. This is known as an ***overriding property declaration***. An overriding property declaration does not declare a new property. Instead, it simply specializes the implementations of the accessors of an existing virtual property.
 
 The override declaration and the overridden base property are required to have the same declared accessibility. In other words, an override declaration shall not change the accessibility of the base property. However, if the overridden base property is protected internal and it is declared in a different assembly than the assembly containing the override declaration then the override declaration’s declared accessibility shall be protected. If the inherited property has only a single accessor (i.e., if the inherited property is read-only or write-only), the overriding property shall include only that accessor. If the inherited property includes both accessors (i.e., if the inherited property is read-write), the overriding property can include either a single accessor or both accessors. There shall be an identity conversion between the type of the overriding and the inherited property.
 
@@ -4071,9 +4076,9 @@ remove_accessor_declaration
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
-An *event_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.6.3](classes.md#1563-static-and-instance-methods), [§15.8.4](classes.md#1584-static-and-instance-events)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods), [§15.8.5](classes.md#1585-virtual-sealed-override-and-abstract-accessors)), `override` ([§15.6.5](classes.md#1565-override-methods), [§15.8.5](classes.md#1585-virtual-sealed-override-and-abstract-accessors)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods), [§15.8.5](classes.md#1585-virtual-sealed-override-and-abstract-accessors)) and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers. Additionally an *event_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.12](structs.md#16412-methods)).
+An *event_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `static` ([§15.6.3](classes.md#1563-static-and-instance-methods), [§15.8.4](classes.md#1584-static-and-instance-events)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods), [§15.8.5](classes.md#1585-virtual-sealed-override-and-abstract-accessors)), `override` ([§15.6.5](classes.md#1565-override-methods), [§15.8.5](classes.md#1585-virtual-sealed-override-and-abstract-accessors)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods), [§15.8.5](classes.md#1585-virtual-sealed-override-and-abstract-accessors)) and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers. Additionally an *event_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.12](structs.md#16412-methods)).
 
 Event declarations are subject to the same rules as method declarations ([§15.6](classes.md#156-methods)) with regard to valid combinations of modifiers.
 
@@ -4093,7 +4098,7 @@ An event can be used as the left operand of the `+=` and `-=` operators. These 
 
 The only operations that are permitted on an event by code that is outside the type in which that event is declared, are `+=` and `-=`. Therefore, while such code can add and remove handlers for an event, it cannot directly obtain or modify the underlying list of event handlers.
 
-In an operation of the form `x += y` or `x –= y`, when `x` is an event the result of the operation has type `void` ([§12.21.5](expressions.md#12215-event-assignment)) (as opposed to having the type of `x`, with the value of `x` after the assignment, as for other the `+=` and `-=` operators defined on non-event types). This prevents external code from indirectly examining the underlying delegate of an event.
+In an operation of the form `x += y` or `x –= y`, when `x` is an event the result of the operation has type `void` ([§12.22.5](expressions.md#12225-event-assignment)) (as opposed to having the type of `x`, with the value of `x` after the assignment, as for other the `+=` and `-=` operators defined on non-event types). This prevents external code from indirectly examining the underlying delegate of an event.
 
 > *Example*: The following example shows how event handlers are attached to instances of the `Button` class:
 >
@@ -4137,7 +4142,7 @@ In an operation of the form `x += y` or `x –= y`, when `x` is an event the
 
 ### 15.8.2 Field-like events
 
-Within the program text of the class or struct that contains the declaration of an event, certain events can be used like fields. To be used in this way, an event shall not be abstract or extern, and shall not explicitly include *event_accessor_declaration*s. Such an event can be used in any context that permits a field. The field contains a delegate ([§20](delegates.md#20-delegates)), which refers to the list of event handlers that have been added to the event. If no event handlers have been added, the field contains `null`.
+Within the program text of the class or struct that contains the declaration of an event, certain events can be used like fields. To be used in this way, an event shall not be abstract or extern, and shall not explicitly include *event_accessor_declaration*s. Such an event can be used in any context that permits a field. The field contains a delegate ([§21](delegates.md#21-delegates)), which refers to the list of event handlers that have been added to the event. If no event handlers have been added, the field contains `null`.
 
 > *Example*: In the following code
 >
@@ -4299,7 +4304,7 @@ An abstract event declaration specifies that the accessors of the event are virt
 
 An event declaration that includes both the `abstract` and `override` modifiers specifies that the event is abstract and overrides a base event. The accessors of such an event are also abstract.
 
-Abstract event declarations are only permitted in abstract classes ([§15.2.2.2](classes.md#15222-abstract-classes)).
+Abstract event declarations are only permitted in abstract classes ([§15.2.2.2](classes.md#15222-abstract-classes)) and interfaces ([§19.4.5](interfaces.md#1945-interface-events)).
 
 The accessors of an inherited virtual event can be overridden in a derived class by including an event declaration that specifies an `override` modifier. This is known as an ***overriding event declaration***. An overriding event declaration does not declare a new event. Instead, it simply specializes the implementations of the accessors of an existing virtual event.
 
@@ -4354,14 +4359,14 @@ ref_indexer_body
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
-An *indexer_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods)), `override` ([§15.6.5](classes.md#1565-override-methods)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods)) and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers. Additionally an *indexer_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.12](structs.md#16412-methods)).
+An *indexer_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods)), `override` ([§15.6.5](classes.md#1565-override-methods)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods)) and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers. Additionally an *indexer_declaration* that is contained directly by a *struct_declaration* may include the `readonly` modifier ([§16.4.12](structs.md#16412-methods)).
 
 - The first declares a non-ref-valued indexer. Its value has type *type*. This kind of indexer may be readable and/or writeable.
 - The second declares a ref-valued indexer. Its value is a *variable_reference* ([§9.5](variables.md#95-variable-references)), that may be `readonly`, to a variable of type *type*. This kind of indexer is only readable.
 
-An *indexer_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods)), `override` ([§15.6.5](classes.md#1565-override-methods)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods)), and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers.
+An *indexer_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)) and any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), the `new` ([§15.3.5](classes.md#1535-the-new-modifier)), `virtual` ([§15.6.4](classes.md#1564-virtual-methods)), `override` ([§15.6.5](classes.md#1565-override-methods)), `sealed` ([§15.6.6](classes.md#1566-sealed-methods)), `abstract` ([§15.6.7](classes.md#1567-abstract-methods)), and `extern` ([§15.6.8](classes.md#1568-external-methods)) modifiers.
 
 Indexer declarations are subject to the same rules as method declarations ([§15.6](classes.md#156-methods)) with regard to valid combinations of modifiers, with the one exception being that the `static` modifier is not permitted on an indexer declaration.
 
@@ -4528,7 +4533,7 @@ When an indexer declaration includes an `extern` modifier, the indexer is said t
 Indexers and properties are very similar in concept, but differ in the following ways:
 
 - A property is identified by its name, whereas an indexer is identified by its signature.
-- A property is accessed through a *simple_name* ([§12.8.4](expressions.md#1284-simple-names)) or a *member_access* ([§12.8.7](expressions.md#1287-member-access)), whereas an indexer element is accessed through an *element_access* ([§12.8.12.3](expressions.md#128123-indexer-access)).
+- A property is accessed through a *simple_name* ([§12.8.4](expressions.md#1284-simple-names)) or a *member_access* ([§12.8.7](expressions.md#1287-member-access)), whereas an indexer element is accessed through an *element_access* ([§12.8.12.4](expressions.md#128124-indexer-access)).
 - A property can be a static member, whereas an indexer is always an instance member.
 - A get accessor of a property corresponds to a method with no parameters, whereas a get accessor of an indexer corresponds to a method with the same parameter list as the indexer.
 - A set accessor of a property corresponds to a method with a single parameter named `value`, whereas a set accessor of an indexer corresponds to a method with the same parameter list as the indexer, plus an additional parameter named `value`.
@@ -4598,7 +4603,7 @@ operator_body
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
 *Note*: The prefix logical negation ([§12.9.4](expressions.md#1294-logical-negation-operator)) and postfix null-forgiving operators ([§12.8.9](expressions.md#1289-null-forgiving-expressions)), while represented by the same lexical token (`!`), are distinct. The latter is not an overloadable operator. *end note*
 
@@ -4634,7 +4639,7 @@ The following rules apply to unary operator declarations, where `T` denotes the 
 
 The signature of a unary operator consists of the operator token (`+`, `-`, `!`, `~`, `++`, `--`, `true`, or `false`) and the type of the single parameter. The return type is not part of a unary operator’s signature, nor is the name of the parameter.
 
-The `true` and `false` unary operators require pair-wise declaration. A compile-time error occurs if a class declares one of these operators without also declaring the other. The `true` and `false` operators are described further in [§12.24](expressions.md#1224-boolean-expressions).
+The `true` and `false` unary operators require pair-wise declaration. A compile-time error occurs if a class declares one of these operators without also declaring the other. The `true` and `false` operators are described further in [§12.25](expressions.md#1225-boolean-expressions).
 
 > *Example*: The following example shows an implementation and subsequent usage of operator++ for an integer vector class:
 >
@@ -4669,7 +4674,7 @@ The `true` and `false` unary operators require pair-wise declaration. A compile-
 > }
 > ```
 >
-> Note how the operator method returns the value produced by adding 1 to the operand, just like the postfix increment and decrement operators ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators)), and the prefix increment and decrement operators ([§12.9.6](expressions.md#1296-prefix-increment-and-decrement-operators)). Unlike in C++, this method should not modify the value of its operand directly as this would violate the standard semantics of the postfix increment operator ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators)).
+> Note how the operator method returns the value produced by adding 1 to the operand, just like the postfix increment and decrement operators ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators)), and the prefix increment and decrement operators ([§12.9.7](expressions.md#1297-prefix-increment-and-decrement-operators)). Unlike in C++, this method should not modify the value of its operand directly as this would violate the standard semantics of the postfix increment operator ([§12.8.16](expressions.md#12816-postfix-increment-and-decrement-operators)).
 >
 > *end example*
 
@@ -4678,7 +4683,7 @@ The `true` and `false` unary operators require pair-wise declaration. A compile-
 The following rules apply to binary operator declarations, where `T` denotes the instance type of the class or struct that contains the operator declaration:
 
 - A binary non-shift operator shall take two parameters, at least one of which shall have type `T` or `T?`, and can return any type.
-- A binary `<<` or `>>` operator ([§12.11](expressions.md#1211-shift-operators)) shall take two parameters, the first of which shall have type `T` or `T?` and the second of which shall have type `int` or `int?`, and can return any type.
+- A binary `<<` or `>>` operator ([§12.12](expressions.md#1212-shift-operators)) shall take two parameters, the first of which shall have type `T` or `T?` and the second of which shall have type `int` or `int?`, and can return any type.
 
 The signature of a binary operator consists of the operator token (`+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `<<`, `>>`, `==`, `!=`, `>`, `<`, `>=`, or `<=`) and the types of the two parameters. The return type and the names of the parameters are not part of a binary operator’s signature.
 
@@ -4856,9 +4861,9 @@ constructor_body
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
-A *constructor_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)),  any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), and an `extern` ([§15.6.8](classes.md#1568-external-methods)) modifier. A constructor declaration is not permitted to include the same modifier multiple times.
+A *constructor_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)),  any one of the permitted kinds of declared accessibility ([§15.3.6](classes.md#1536-access-modifiers)), and an `extern` ([§15.6.8](classes.md#1568-external-methods)) modifier. A constructor declaration is not permitted to include the same modifier multiple times.
 
 The *identifier* of a *constructor_declarator* shall name the class in which the instance constructor is declared. If any other name is specified, a compile-time error occurs.
 
@@ -5126,9 +5131,9 @@ static_constructor_body
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
-A *static_constructor_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)) and an `extern` modifier ([§15.6.8](classes.md#1568-external-methods)).
+A *static_constructor_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)) and an `extern` modifier ([§15.6.8](classes.md#1568-external-methods)).
 
 The *identifier* of a *static_constructor_declaration* shall name the class in which the static constructor is declared. If any other name is specified, a compile-time error occurs.
 
@@ -5289,9 +5294,9 @@ finalizer_body
     ;
 ```
 
-*unsafe_modifier* ([§23.2](unsafe-code.md#232-unsafe-contexts)) is only available in unsafe code ([§23](unsafe-code.md#23-unsafe-code)).
+*unsafe_modifier* ([§24.2](unsafe-code.md#242-unsafe-contexts)) is only available in unsafe code ([§24](unsafe-code.md#24-unsafe-code)).
 
-A *finalizer_declaration* may include a set of *attributes* ([§22](attributes.md#22-attributes)).
+A *finalizer_declaration* may include a set of *attributes* ([§23](attributes.md#23-attributes)).
 
 The *identifier* of a *finalizer_declarator* shall name the class in which the finalizer is declared. If any other name is specified, a compile-time error occurs.
 
@@ -5387,13 +5392,13 @@ A compiler shall behave as if this method, and overrides of it, do not exist at 
 >
 > *end example*
 
-For a discussion of the behavior when an exception is thrown from a finalizer, see [§21.4](exceptions.md#214-how-exceptions-are-handled).
+For a discussion of the behavior when an exception is thrown from a finalizer, see [§22.4](exceptions.md#224-how-exceptions-are-handled).
 
 ## 15.14 Async Functions
 
 ### 15.14.1 General
 
-A method ([§15.6](classes.md#156-methods)), anonymous function ([§12.19](expressions.md#1219-anonymous-function-expressions)), or local function ([§13.6.4](statements.md#1364-local-function-declarations)) with the `async` modifier is called an ***async function***. In general, the term ***async*** is used to describe any kind of function that has the `async` modifier.
+A method ([§15.6](classes.md#156-methods)), anonymous function ([§12.20](expressions.md#1220-anonymous-function-expressions)), or local function ([§13.6.4](statements.md#1364-local-function-declarations)) with the `async` modifier is called an ***async function***. In general, the term ***async*** is used to describe any kind of function that has the `async` modifier.
 
 It is a compile-time error for the parameter list of an async function to specify any `in`, `out`, or `ref` parameters, or any parameter of a `ref struct` type.
 
@@ -5401,7 +5406,7 @@ The *return_type* of an async method shall be either `void`, a ***task type***, 
 
 An async method returning a task type is said to be ***task-returning***.
 
-Task types can vary in their exact definition, but from the language’s point of view, a task type is in one of the states *incomplete*, *succeeded* or *faulted*. A *faulted* task records a pertinent exception. A *succeeded* `«TaskType»<T>` records a result of type `T`. Task types are awaitable, and tasks can therefore be the operands of await expressions ([§12.9.8](expressions.md#1298-await-expressions)).
+Task types can vary in their exact definition, but from the language’s point of view, a task type is in one of the states *incomplete*, *succeeded* or *faulted*. A *faulted* task records a pertinent exception. A *succeeded* `«TaskType»<T>` records a result of type `T`. Task types are awaitable, and tasks can therefore be the operands of await expressions ([§12.9.9](expressions.md#1299-await-expressions)).
 
 > *Example*: The task type `MyTask<T>` is associated with the task builder type `MyTaskMethodBuilder<T>` and the awaiter type `Awaiter<T>`:
 >
@@ -5428,7 +5433,7 @@ A task builder type is a class or struct type that corresponds to a specific tas
 
 > *Note:* If the task type is declared `internal`, the the corresponding builder type must also be declared `internal` and be defined in the same assembly. If the task type is nested inside another type, the task builder type must also be nested in that same type. *end note*
 
-An async function has the ability to suspend evaluation by means of await expressions ([§12.9.8](expressions.md#1298-await-expressions)) in its body. Evaluation may later be resumed at the point of the suspending await expression by means of a ***resumption delegate***. The resumption delegate is of type `System.Action`, and when it is invoked, evaluation of the async function invocation will resume from the await expression where it left off. The ***current caller*** of an async function invocation is the original caller if the function invocation has never been suspended or the most recent caller of the resumption delegate otherwise.
+An async function has the ability to suspend evaluation by means of await expressions ([§12.9.9](expressions.md#1299-await-expressions)) in its body. Evaluation may later be resumed at the point of the suspending await expression by means of a ***resumption delegate***. The resumption delegate is of type `System.Action`, and when it is invoked, evaluation of the async function invocation will resume from the await expression where it left off. The ***current caller*** of an async function invocation is the original caller if the function invocation has never been suspended or the most recent caller of the resumption delegate otherwise.
 
 ### 15.14.2 Task-type builder pattern
 
@@ -5496,27 +5501,29 @@ This allows the context to keep track of how many `void`-returning async functio
 
 ### 15.15.1 General
 
-A function member ([§12.6](expressions.md#126-function-members)) or local function ([§13.6.4](statements.md#1364-local-function-declarations)) implemented using an iterator block ([§13.3](statements.md#133-blocks)) is called an ***iterator***. An iterator block may be used as the body of a function member as long as the return type of the corresponding function member is one of the enumerator interfaces ([§15.15.2](classes.md#15152-enumerator-interfaces)) or one of the enumerable interfaces ([§15.15.3](classes.md#15153-enumerable-interfaces)).
+A function member ([§12.6](expressions.md#126-function-members)) or local function ([§13.6.4](statements.md#1364-local-function-declarations)) implemented using an iterator block ([§13.3](statements.md#133-blocks)) is called an ***iterator***. An iterator block may be used as the body of a function as long as the return type of the corresponding function is one of the enumerator interfaces ([§15.15.2](classes.md#15152-enumerator-interfaces)) or one of the enumerable interfaces ([§15.15.3](classes.md#15153-enumerable-interfaces)).
 
-An async function ([§15.14](classes.md#1514-async-functions)) implemented using an iterator block ([§13.3](statements.md#133-blocks)) is called an ***asynchronous iterator***. An asynchronous iterator block may be used as the body of a function member as long as the return type of the corresponding function member is the asynchronous enumerator interfaces ([§15.15.2](classes.md#15152-enumerator-interfaces)) or the asynchronous enumerable interfaces ([§15.15.3](classes.md#15153-enumerable-interfaces)).
+An async function ([§15.14](classes.md#1514-async-functions)) or local function ([§13.6.4](statements.md#1364-local-function-declarations)) implemented using an iterator block ([§13.3](statements.md#133-blocks)) is called an ***asynchronous iterator***. An asynchronous iterator block may be used as the body of a function as long as the return type of the corresponding function is the asynchronous enumerator interface ([§15.15.2](classes.md#15152-enumerator-interfaces)) or the asynchronous enumerable interface ([§15.15.3](classes.md#15153-enumerable-interfaces)).
 
 An iterator block may occur as a *method_body*, *operator_body* or *accessor_body*, whereas events, instance constructors, static constructors and finalizer shall not be implemented as synchronous or asynchronous iterators.
 
-When a function member or local function is implemented using an iterator block, it is a compile-time error for the parameter list of the function member to specify any `in`, `out`, or `ref` parameters, or an parameter of a `ref struct` type.
+When a function is implemented using an iterator block, it is a compile-time error for the parameter list of the function to specify any `in`, `out`, or `ref` parameters, or a parameter of a `ref struct` type.
+
+An asynchronous iterator shall support cancellation of the asynchronous operation. This is described in [§23.5.8](attributes.md#2358-the-enumeratorcancellation-attribute).
 
 ### 15.15.2 Enumerator interfaces
 
-The ***enumerator interfaces*** are the non-generic interface `System.Collections.IEnumerator` and all instantiations of the generic interfaces `System.Collections.Generic.IEnumerator<T>`.
+The ***enumerator interfaces*** are the non-generic interface `System.Collections.IEnumerator` and the generic interface `System.Collections.Generic.IEnumerator<T>`.
 
-The ***asynchronous enumerator interfaces*** are all instantiations of the generic interface `System.Collections.Generic.IAsyncEnumerator<T>`.
+The ***asynchronous enumerator interface*** is the generic interface `System.Collections.Generic.IAsyncEnumerator<T>`.
 
 For the sake of brevity, in this subclause and its siblings these interfaces are referenced as `IEnumerator`, `IEnumerator<T>`, and `IAsyncEnumerator<T>`, respectively.
 
 ### 15.15.3 Enumerable interfaces
 
-The ***enumerable interfaces*** are the non-generic interface `System.Collections.IEnumerable` and all instantiations of the generic interfaces `System.Collections.Generic.IEnumerable<T>`.
+The ***enumerable interfaces*** are the non-generic interface `System.Collections.IEnumerable` and the generic interfaces `System.Collections.Generic.IEnumerable<T>`.
 
-The ***asynchronous enumerable interfaces*** are all instantiations of the generic interface `System.Collections.Generic.IAsyncEnumerable<T>`.
+The ***asynchronous enumerable interface*** is the generic interface `System.Collections.Generic.IAsyncEnumerable<T>`.
 
 For the sake of brevity, in this subclause and its siblings these interfaces are referenced as `IEnumerable`, `IEnumerable<T>`, and `IAsyncEnumerable<T>`, respectively.
 
@@ -5531,13 +5538,13 @@ An iterator produces a sequence of values, all of the same type. This type is ca
 
 #### 15.15.5.1 General
 
-When a function member or local function returning an enumerator interface type is implemented using an iterator block, invoking the function does not immediately execute the code in the iterator block. Instead, an ***enumerator object*** is created and returned. This object encapsulates the code specified in the iterator block, and execution of the code in the iterator block occurs when the enumerator object’s `MoveNext` or `MoveNextAsync` method is invoked. An enumerator object has the following characteristics:
+When a function member or local function returning an enumerator interface type or an asynchronous enumerator interface type is implemented using an iterator block, invoking the function does not immediately execute the code in the iterator block. Instead, an ***enumerator object*** is created and returned. This object encapsulates the code specified in the iterator block, and execution of the code in the iterator block occurs when the enumerator object’s `MoveNext` or `MoveNextAsync` method is invoked. An enumerator object has the following characteristics:
 
 - It implements `System.IDisposable`, `IEnumerator` and `IEnumerator<T>`, or `System.IAsyncDisposable` and `IAsyncEnumerator<T>`, where `T` is the yield type of the iterator.
-- It is initialized with a copy of the argument values (if any) and instance value passed to the function member.
+- It is initialized with a copy of the argument values (if any) and instance value passed to the function.
 - It has four potential states, **before**, **running**, **suspended**, and **after**, and is initially in the **before** state.
 
-An enumerator object is typically an instance of a compiler-generated enumerator class that encapsulates the code in the iterator block and implements the enumerator interfaces, but other methods of implementation are possible. If an enumerator class is generated by the compiler, that class will be nested, directly or indirectly, in the class containing the function member, it will have private accessibility, and it will have a name reserved for compiler use ([§6.4.3](lexical-structure.md#643-identifiers)).
+An enumerator object is typically an instance of a compiler-generated enumerator class that encapsulates the code in the iterator block and implements the enumerator interfaces, but other methods of implementation are possible. If an enumerator class is generated by the compiler, that class will be nested, directly or indirectly, in the class containing the function, it will have private accessibility, and it will have a name reserved for compiler use ([§6.4.3](lexical-structure.md#643-identifiers)).
 
 An enumerator object may implement more interfaces than those specified above.
 
@@ -5572,6 +5579,8 @@ The precise action performed by `MoveNext` or `MoveNextAsync` depends on the sta
 - If the state of the enumerator object is **after**, invoking `MoveNext` returns false.
 
 When `MoveNext` executes the iterator block, execution can be interrupted in four ways: By a `yield return` statement, by a `yield break` statement, by encountering the end of the iterator block, and by an exception being thrown and propagated out of the iterator block.
+
+> *Note*: `MoveNextAsync` is suspended if it evaluates an `await` expression that awaits a task type that hasn’t completed. *end note*
 
 - When a `yield return` statement is encountered ([§9.4.4.20](variables.md#94420-yield-statements)):
   - The expression given in the statement is evaluated, implicitly converted to the yield type, and assigned to the `Current` property of the enumerator object.
@@ -5616,21 +5625,20 @@ The `Dispose` or `DisposeAsync` method is used to clean up the iteration by brin
 
 #### 15.15.6.1 General
 
-When a function member or local function returning an enumerable interface type is implemented using an iterator block, invoking the function member does not immediately execute the code in the iterator block. Instead, an ***enumerable object*** is created and returned.
+When a function member or local function returning an enumerable interface type or an async enumerable interface type is implemented using an iterator block, invoking the function does not immediately execute the code in the iterator block. Instead, an ***enumerable object*** is created and returned.
 
-The enumerable object’s `GetEnumerator` or `GetAsyncEnumerator` method returns an enumerator object that encapsulates the code specified in the iterator block, and execution of the code in the iterator block occurs when the enumerator object’s `MoveNext` or `MoveNextAsync` method is invoked. An enumerable object has the following characteristics:
+A synchronous enumerable object implements `IEnumerable` and `IEnumerable<T>`, where `T` is the yield type of the iterator. Its `GetEnumerator` method returns an enumerator object ([§15.15.5](classes.md#15155-enumerator-objects)). An async enumerable object implements `IAsyncEnumerable<T>` where `T` is the yield type of the iterator. Its `GetAsyncEnumerator` method returns an asynchronous enumerator object  ([§15.15.5](classes.md#15155-enumerator-objects)).
 
-- It implements `IEnumerable` and `IEnumerable<T>` or `IAsyncEnumerable<T>`, where `T` is the yield type of the iterator.
-- It is initialized with a copy of the argument values (if any) and instance value passed to the function member.
+An enumerable object is initialized with a copy of the argument values (if any) and instance value passed to the function.
 
-An enumerable object is typically an instance of a compiler-generated enumerable class that encapsulates the code in the iterator block and implements the enumerable interfaces, but other methods of implementation are possible. If an enumerable class is generated by the compiler, that class will be nested, directly or indirectly, in the class containing the function member, it will have private accessibility, and it will have a name reserved for compiler use ([§6.4.3](lexical-structure.md#643-identifiers)).
+An enumerable object is typically an instance of a compiler-generated enumerable class that encapsulates the code in the iterator block and implements the enumerable interfaces, but other methods of implementation are possible. If an enumerable class is generated by the compiler, that class will be nested, directly or indirectly, in the class containing the function, it will have private accessibility, and it will have a name reserved for compiler use ([§6.4.3](lexical-structure.md#643-identifiers)).
 
 An enumerable object may implement more interfaces than those specified above.
 
-> *Note*: For example, an enumerable object may also implement `IEnumerator` and `IEnumerator<T>`, enabling it to serve as both an enumerable and an enumerator. Typically, such an implementation would return its own instance (to save allocations) from the first call to `GetEnumerator`. Subsequent invocations of `GetEnumerator`, if any, would return a new class instance, typically of the same class, so that calls to different enumerator instances will not affect each other. It cannot return the same instance even if the previous enumerator has already enumerated past the end of the sequence, since all future calls to an exhausted enumerator must throw exceptions. *end note*
+> *Note*: For example, an enumerable object may also implement `IEnumerator` and `IEnumerator<T>`, enabling it to serve as both an enumerable and an enumerator. Typically, such an implementation would return its own instance (to save allocations) from the first call to `GetEnumerator`. Subsequent invocations of `GetEnumerator`, if any, would return a new class instance, typically of the same class, so that calls to different enumerator instances will not affect each other. *end note*
 
 #### 15.15.6.2 The GetEnumerator or GetAsyncEnumerator method
 
 An enumerable object provides an implementation of the `GetEnumerator` methods of the `IEnumerable` and `IEnumerable<T>` interfaces. The two `GetEnumerator` methods share a common implementation that acquires and returns an available enumerator object. The enumerator object is initialized with the argument values and instance value saved when the enumerable object was initialized, but otherwise the enumerator object functions as described in [§15.15.5](classes.md#15155-enumerator-objects).
 
-An asynchronous enumerable object provides an implementation of the `GetAsyncEnumerator` method of the `IAsyncEnumerable<T>` interface. This method returns an available asynchronous enumerator object. The enumerator object is initialized with the argument values and instance value saved when the enumerable object was initialized, but otherwise the enumerator object functions as described in [§15.15.5](classes.md#15155-enumerator-objects).
+An asynchronous enumerable object provides an implementation of the `GetAsyncEnumerator` method of the `IAsyncEnumerable<T>` interface. This method returns an available asynchronous enumerator object. The enumerator object is initialized with the argument values and instance value saved when the enumerable object was initialized, including the optional cancellation token, but otherwise the enumerator object functions as described in [§15.15.5](classes.md#15155-enumerator-objects). An asynchronous iterator method can mark one parameter as the cancellation token using `System.Runtime.CompilerServices.EnumeratorCancellationAttribute` ([§23.5.8](attributes.md#2358-the-enumeratorcancellation-attribute)). An implementation shall provide a mechanism to combine cancellation tokens such that an asynchronous iterator is canceled when either cancellation token (the argument to `GetAsyncEnumerator` or the argument attributed with the attribute `System.Runtime.CompilerServices.EnumeratorCancellationAttribute`) requests cancellation.

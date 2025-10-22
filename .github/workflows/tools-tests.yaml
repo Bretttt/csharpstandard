@@ -26,11 +26,11 @@ jobs:
       uses: actions/checkout@v5.0.0
 
     - name: Setup .NET 8.0
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.x
 
     - name: Run all tests
       run: |
         cd tools
-        dotnet test
+        dotnet test --filter Name!~ExampleTests
