@@ -1,13 +1,11 @@
 # 18 Extended indexing and slicing
 
-> **Review Note:** This new clause, currently ([§18](ranges.md#18-extended-indexing-and-slicing)), is placed here temporarily to avoid text changes due to renumbering occurring in chapters & clauses otherwise unaffected by the PR. Its final placement is not yet determined, however between the  Arrays ([§17](arrays.md#17-arrays)) and Interfaces ([§19](interfaces.md#19-interfaces)) chapters might be suitable – other placements can be suggested during review. It can be relocated later with just a simple edit to `clauses.json`.
-
 ## 18.1 General
 
 This clause introduces a model for *extended indexable* and *sliceable* *collection* types built on:
 
 - The types introduced in this clause, `System.Index` ([§18.2](ranges.md#182-the-index-type)) and `System.Range` ([§18.3](ranges.md#183-the-range-type));
-- The pre-defined unary `^` ([§12.9.6](expressions.md#1296-hat-operator)) and binary `..` ([§12.10](expressions.md#1210-range-operator)) operators; and
+- The pre-defined unary `^` ([§12.9.6](expressions.md#1296-index-from-end-operator)) and binary `..` ([§12.10](expressions.md#1210-range-operator)) operators; and
 - The *element_access* expression.
 
 Under the model a type is classified as:
@@ -88,7 +86,7 @@ The required members for a type to qualify as a sequence or sliceable may be inh
 
 ## 18.2 The Index type
 
-The `System.Index` type represents an *abstract* index which is either a *from-start index* or a *from-end index*.
+The `System.Index` type represents an *abstract* index which is either a from-start index or a from-end index.
 
 ```csharp
     public readonly struct Index : IEquatable<Index>
@@ -118,7 +116,7 @@ The `System.Index` type represents an *abstract* index which is either a *from-s
 >
 > *end example*
 
-There is an implicit conversion from `int` to `Index` which produces from-start indices, and a language-defined unary operator `^` ([§12.9.6](expressions.md#1296-hat-operator)) from `int` to `Index` which produces from-end indices.
+There is an implicit conversion from `int` to `Index` which produces from-start indices, and a language-defined unary operator `^` ([§12.9.6](expressions.md#1296-index-from-end-operator)) from `int` to `Index` which produces from-end indices.
 
 > *Example*
 >
@@ -170,7 +168,7 @@ The `System.Range` type represents the abstract range of `Index`es from a `Start
 
 > *Example*
 >
-> The following examples use the implicit conversion from `int` to `Index` ([§18.2](ranges.md#182-the-index-type)) and the `^` ([§12.9.6](expressions.md#1296-hat-operator)) operator to create the `Index` values for each `Range`:
+> The following examples use the implicit conversion from `int` to `Index` ([§18.2](ranges.md#182-the-index-type)) and the `^` ([§12.9.6](expressions.md#1296-index-from-end-operator)) operator to create the `Index` values for each `Range`:
 >
 > ```csharp
 > var firstQuad = new Range(0, 4);  // the indices from `0` to `3`
@@ -245,8 +243,8 @@ A concrete range value is *empty* if `N` is zero. An empty concrete range may ha
 >
 > ```csharp
 > var (ix0, len0) = firstQuad.GetOffsetAndLength(6); // ix0 = 0, len0 = 4
-> var (ix1, len1) = nextQuad.GetOffsetAndLength(6);  // throws ArgumentOutOfRangeException
->                                                    // as range crosses sequence end
+> var (ix1, len1) = nextQuad.GetOffsetAndLength(6);  // throws
+>    // ArgumentOutOfRangeException as range crosses sequence end
 > var (ix2, len2) = wholeSeq.GetOffsetAndLength(6);  // ix2 = 0, len2 = 6
 > var (ix3, len3) = dropFirst.GetOffsetAndLength(6); // ix3 = 1, len3 = 5
 > var (ix4, len4) = dropLast.GetOffsetAndLength(6);  // ix4 = 0, len4 = 5

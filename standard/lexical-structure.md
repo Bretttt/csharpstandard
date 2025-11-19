@@ -2,7 +2,7 @@
 
 ## 6.1 Programs
 
-A C# ***program*** consists of one or more source files, known formally as ***compilation units*** ([§14.2](namespaces.md#142-compilation-units)). Although a compilation unit might have a one-to-one correspondence with a file in a file system, such correspondence is not required.
+A C# ***program*** consists of one or more source files, each known formally as a ***compilation unit*** ([§14.2](namespaces.md#142-compilation-units)). Although a compilation unit might have a one-to-one correspondence with a file in a file system, such correspondence is not required.
 
 Conceptually speaking, a program is compiled using three steps:
 
@@ -134,7 +134,7 @@ then the *type_argument_list* shall be retained as part of the disambiguated pro
 >
 > *end example*
 
-When recognising a *relational_expression* ([§12.13.1](expressions.md#12131-general)) if both the “*relational_expression* `is` *type*” and “*relational_expression* `is` *pattern*” alternatives are applicable, and *type* resolves to an accessible type, then the “*relational_expression* `is` *type*” alternative shall be chosen.
+When recognising a *relational_expression* ([§12.14.1](expressions.md#12141-general)) if both the “*relational_expression* `is` *type*” and “*relational_expression* `is` *pattern*” alternatives are applicable, and *type* resolves to an accessible type, then the “*relational_expression* `is` *type*” alternative shall be chosen.
 
 ## 6.3 Lexical analysis
 
@@ -343,7 +343,7 @@ Whitespace
 
 ### 6.4.1 General
 
-There are several kinds of ***tokens***: identifiers, keywords, literals, operators, and punctuators. White space and comments are not tokens, though they act as separators for tokens.
+There are several kinds of ***token***s: identifiers, keywords, literals, operators, and punctuators. White space and comments are not tokens, though they act as separators for tokens.
 
 ```ANTLR
 token
@@ -423,6 +423,11 @@ The rules for identifiers given in this subclause correspond exactly to those re
 identifier
     : Simple_Identifier
     | contextual_keyword
+    | discard_token
+    ;
+
+discard_token
+    : '_'
     ;
 
 Simple_Identifier
@@ -505,7 +510,7 @@ fragment Formatting_Character
 > - For information on the Unicode character classes mentioned above, see *The Unicode Standard*.
 > - The fragment *Available_Identifier* requires the exclusion of keywords and contextual keywords. If the grammar in this specification is processed with ANTLR then this exclusion is handled automatically by the semantics of ANTLR:
 >   - Keywords and contextual keywords occur in the grammar as literal strings.
->   - ANTLR creates implicit lexical token rules are created from these literal strings.
+>   - ANTLR creates implicit lexical token rules for these literal strings.
 >   - ANTLR considers these implicit rules before the explicit lexical rules in the grammar.
 >   - Therefore fragment *Available_Identifier* will not match keywords or contextual keywords as the lexical rules for those precede it.
 > - Fragment *Escaped_Identifier* includes escaped keywords and contextual keywords as they are part of the longer token starting with an `@` and lexical processing always forms the longest possible lexical element ([§6.3.1](lexical-structure.md#631-general)).
@@ -887,7 +892,7 @@ The type of a *Character_Literal* is `char`.
 
 #### 6.4.5.6 String literals
 
-C# supports two forms of string literals: ***regular string literals*** and ***verbatim string literals***. A regular string literal consists of zero or more characters enclosed in double quotes, as in `"hello"`, and can include both simple escape sequences (such as `\t` for the tab character), and hexadecimal and Unicode escape sequences.
+C# supports two forms of string literals: ***regular string literal***s and ***verbatim string literal***s. A regular string literal consists of zero or more characters enclosed in double quotes, as in `"hello"`, and can include both simple escape sequences (such as `\t` for the tab character), and hexadecimal and Unicode escape sequences.
 
 A verbatim string literal consists of an `@` character followed by a double-quote character, zero or more characters, and a closing double-quote character.
 
@@ -967,7 +972,7 @@ fragment Quote_Escape_Sequence
 
 The type of a *String_Literal* is `string`.
 
-Each string literal does not necessarily result in a new string instance. When two or more string literals that are equivalent according to the string equality operator ([§12.13.8](expressions.md#12138-string-equality-operators)), appear in the same assembly, these string literals refer to the same string instance.
+Each string literal does not necessarily result in a new string instance. When two or more string literals that are equivalent according to the string equality operator ([§12.14.8](expressions.md#12148-string-equality-operators)), appear in the same assembly, these string literals refer to the same string instance.
 
 > *Example*: For instance, the output produced by
 >
@@ -1195,7 +1200,7 @@ fragment PP_Primary_Expression
 
 When referenced in a pre-processing expression, a defined conditional compilation symbol has the Boolean value `true`, and an undefined conditional compilation symbol has the Boolean value `false`.
 
-Evaluation of a pre-processing expression always yields a Boolean value. The rules of evaluation for a pre-processing expression are the same as those for a constant expression ([§12.24](expressions.md#1224-constant-expressions)), except that the only user-defined entities that can be referenced are conditional compilation symbols.
+Evaluation of a pre-processing expression always yields a Boolean value. The rules of evaluation for a pre-processing expression are the same as those for a constant expression ([§12.25](expressions.md#1225-constant-expressions)), except that the only user-defined entities that can be referenced are conditional compilation symbols.
 
 ### 6.5.4 Definition directives
 
@@ -1306,7 +1311,7 @@ fragment PP_Endif
     ;
 ```
 
-Conditional compilation directives shall be written in groups consisting of, in order, a `#if` directive, zero or more `#elif` directives, zero or one `#else` directive, and a `#endif` directive. Between the directives are ***conditional sections*** of source code. Each section is controlled by the immediately preceding directive. A conditional section may itself contain nested conditional compilation directives provided these directives form complete groups.
+Conditional compilation directives shall be written in groups consisting of, in order, a `#if` directive, zero or more `#elif` directives, zero or one `#else` directive, and a `#endif` directive. Between the directives are ***conditional section***s of source code. Each section is controlled by the immediately preceding directive. A conditional section may itself contain nested conditional compilation directives provided these directives form complete groups.
 
 At most one of the contained conditional sections is selected for normal lexical processing:
 
